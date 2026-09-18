@@ -27,6 +27,6 @@ jobs:
         run: |
           aws cloudformation deploy \
             --template-file aws-cfn-infra-demo/templates/basic-infra-template.yaml \
-            --stack-name nf-ce-sa-network-storage \
+            --stack-name nf-ce-sa-deploy-basic-infra-template \
             --parameter-overrides EnvironmentName=staging ProjectName=nf-ce-sa DeployTimestamp=$(date -u +%Y%m%d%H%M%S) \
             --region us-east-1
