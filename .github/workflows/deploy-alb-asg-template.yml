@@ -1,0 +1,39 @@
+name: Deploy ALB + ASG CloudFormation stack
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "aws-cfn-infra-demo/templates/alb-asg-template.yaml"
+      - ".github/workflows/deploy-alb-asg-template.yml"
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy CloudFormation stack
+        run: |
+          aws cloudformation deploy \
+            --template-file aws-cfn-infra-demo/templates/alb-asg-template.yaml \
+            --stack-name nf-ce-sa-alb-asg \
+            --parameter-overrides NetworkStackName=nf-ce-sa-deploy-basic-infra-template \
+            --region us-east-1
+
+      - name: Show ALB DNS name
+        run: |
+          aws cloudformation describe-stacks \
+            --stack-name nf-ce-sa-alb-asg \
+            --query "Stacks[0].Outputs" \
+            --region us-east-1
