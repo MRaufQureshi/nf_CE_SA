@@ -12,11 +12,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1 # Change to your region
 
+      - name: Delete ALB + ASG stack
+        run: |
+          echo "Initiating ALB + ASG stack deletion..."
+          aws cloudformation delete-stack --stack-name nf-ce-sa-alb-asg
+
+          echo "Waiting for ALB + ASG stack deletion to complete..."
+          aws cloudformation wait stack-delete-complete --stack-name nf-ce-sa-alb-asg
+          echo "ALB + ASG stack successfully destroyed!"
+
       - name: Delete CloudFormation Stack
         run: |
-          echo "Initiating stack deletion..."
-          aws cloudformation delete-stack --stack-name nf-ce-sa-network-storage
+          echo "Initiating network stack deletion..."
+          aws cloudformation delete-stack --stack-name nf-ce-sa-deploy-basic-infra-template
 
-          echo "Waiting for stack deletion to complete..."
-          aws cloudformation wait stack-delete-complete --stack-name nf-ce-sa-network-storage
-          echo "Stack successfully destroyed!"
+          echo "Waiting for network stack deletion to complete..."
+          aws cloudformation wait stack-delete-complete --stack-name nf-ce-sa-deploy-basic-infra-template
+          echo "Network stack successfully destroyed!"
